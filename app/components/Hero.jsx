@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import gsap from 'gsap';
 import Link from 'next/link';
 import Logo from './Logo';
+
 // HeroButton Component
 const HeroButton = ({ href, children }) => {
   return (
@@ -18,40 +19,83 @@ const HeroButton = ({ href, children }) => {
   );
 };
 
-// Main HeroSection Component
 const HeroSection = () => {
   useEffect(() => {
-    const tl = gsap.timeline();
-    tl.from(".hero-logo", { 
-      scale: 0.5, 
-      opacity: 0, 
-      duration: 1, 
-      ease: "back.out(1.7)" 
-    })
-    .from(".hero-title", { 
-      y: 50, 
-      opacity: 0, 
-      duration: 1, 
-      ease: "power3.out" 
-    }, "-=0.5")
-    .from(".hero-description", { 
-      y: 30, 
-      opacity: 0, 
-      duration: 0.8 
-    }, "-=0.5")
-    .from(".hero-button", { 
-      y: 20, 
-      opacity: 0, 
-      duration: 0.5 
-    }, "-=0.3");
+    // Create a matchMedia instance for desktop
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    
+    // Create the animation timeline
+    const createTimeline = () => {
+      const tl = gsap.timeline();
+      
+      // Initial fade in and scale for logo
+      tl.from(".hero-logo", { 
+        scale: 0, 
+        opacity: 0, 
+        duration: 1.2, 
+        ease: "elastic.out(1.2, 0.5)",
+        rotation: 360
+      })
+      
+      // Split text animation for title
+      .from(".hero-title", { 
+        y: mediaQuery.matches ? 100 : 50, // Larger movement on desktop
+        opacity: 0, 
+        duration: 1, 
+        ease: "power3.out",
+      }, "-=0.5")
+      
+      // Description fade in
+      .from(".hero-description", { 
+        y: mediaQuery.matches ? 50 : 30, // Adjust based on screen size
+        opacity: 0, 
+        duration: 0.8,
+        ease: "power2.out"
+      }, "-=0.7")
+      
+      // Button animation
+      .from(".hero-button", { 
+        y: mediaQuery.matches ? 30 : 20,
+        opacity: 0, 
+        duration: 0.5,
+        ease: "power2.out"
+      }, "-=0.5")
+      
+      // Background blobs animation
+      .from(".bg-blob", {
+        scale: 0,
+        opacity: 0,
+        duration: 1,
+        ease: "power2.out",
+        stagger: 0.2
+      }, "-=1");
+      
+      return tl;
+    };
+
+    // Create the initial timeline
+    let tl = createTimeline();
+    
+    // Update timeline when screen size changes
+    const handleResize = () => {
+      tl.kill();
+      tl = createTimeline();
+    };
+    
+    mediaQuery.addEventListener('change', handleResize);
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleResize);
+    };
   }, []);
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="bg-blob absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="bg-blob absolute bottom-1/4 -right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="bg-blob absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-purple-900/10 to-indigo-900/10 blur-3xl" />
       </div>
 
       <div className="container mx-auto px-6 text-center relative z-10">
@@ -75,4 +119,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection
+export default HeroSection;

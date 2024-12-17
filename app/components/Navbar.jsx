@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Logo from './Logo';
-// NavLink Component
 const NavLink = ({ href, children }) => {
   return (
     <Link 
@@ -77,7 +76,7 @@ const Navbar = () => {
           <Link href="/" className="flex items-center gap-3">
             <Logo />
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
-              utooni
+              utooni.
             </span>
           </Link>
 
